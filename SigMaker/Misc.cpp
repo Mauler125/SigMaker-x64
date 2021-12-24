@@ -16,7 +16,7 @@ void Settings_t::Save( const char* pszFileName )
 
     if (Settings.iLogLevel >= 3)
     {
-        msg( "saving settings to %s\n", szLocation );
+        msg( "Saving settings to %s\n", szLocation );
     }
 
     FILE* pFile = qfopen( szLocation, "wb" );
@@ -36,7 +36,7 @@ void Settings_t::Load( const char* pszFileName )
 
     if (Settings.iLogLevel >= 3)
     {
-        msg( "loading settings from %s\n", szLocation );
+        msg( "Loading settings from %s\n", szLocation );
     }
 
     FILE* pFile = qfopen( szLocation, "rb" );
@@ -48,6 +48,6 @@ void Settings_t::Load( const char* pszFileName )
     else
     {
         if (Settings.iLogLevel >= 2)
-            msg( "couldn't open settings file using either default or current settings\n" );
+            msg( "Couldn't open settings file. Using either default or current settings\n" );
     }
 }

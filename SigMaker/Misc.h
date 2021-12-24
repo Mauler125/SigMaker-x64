@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Includes.h"
 
 #define IsValidEA( x ) x != 0 && x != BADADDR
@@ -29,7 +28,7 @@ typedef enum {
 
 struct Settings_t {
     int iSelectionType;
-    unsigned int iMaxRefCount;
+    int iMaxRefCount;
     int iKeepUnsafeData;
     int iLogLevel;
 

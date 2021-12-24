@@ -41,7 +41,7 @@ void SearchForSigs( const qstring& strSig )
 	{
 		do
 		{
-			msg("sig found at %llX\n", dwAddress);
+			msg("Sig found at %llX\n", dwAddress);
 			dwAddress = find_binary(dwAddress + 1, inf.omax_ea, strSig.c_str(), 16, SEARCH_DOWN);
 		} while (IsValidEA(dwAddress));
 	}
@@ -69,7 +69,7 @@ void ShowSearchDialog( const char* pszSignature, const char* pszMask )
 
     if (ask_form( szForm, szSignature, szMask ) > 0)
     {
-        show_wait_box( "please wait..." );
+        show_wait_box( "Please wait..." );
 
         //msg( "%s %s\n", szSignature, szMask );
 
@@ -168,7 +168,7 @@ void ShowSearchWindow( void )
 
     if (ask_form( szForm, szSignature ) > 0)
     {
-        show_wait_box( "please wait..." );
+        show_wait_box( "Please wait..." );
         qstring strSig = szSignature;
         SearchForSigs( strSig );
         hide_wait_box( );

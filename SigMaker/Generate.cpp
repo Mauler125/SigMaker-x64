@@ -114,41 +114,43 @@ bool AutoGenerate( ea_t dwAddress, qSigVector& refvecSig )
         }
     }
 
-    msg( "adding references\n" );
-
-    // got references?
-    for (ea_t dwCurrent = get_first_cref_to( dwAddress );
-        dwCurrent != BADADDR;
-        dwCurrent = get_next_cref_to( dwAddress, dwCurrent ))
+    if (Settings.iMaxRefCount > -1)
     {
-        if (dwCurrent == dwAddress)
-            continue;
+        msg("Adding references\n");
 
-        AutoSig_t TargetLocation;
-        TargetLocation.dwStartAddress = TargetLocation.dwCurrentAddress = dwCurrent;
-        TargetLocation.iOpCount = 0;
-        TargetLocation.eType = PT_REFERENCE;
-        vecSig.push_back( TargetLocation );
-
-        nTotalCount++;
-
-        if (Settings.iMaxRefCount > 0)
+        // got references?
+        for (ea_t dwCurrent = get_first_cref_to(dwAddress);
+            dwCurrent != BADADDR;
+            dwCurrent = get_next_cref_to(dwAddress, dwCurrent))
         {
-            if (nTotalCount >= Settings.iMaxRefCount)
-                break;
-        }      
-    }
+            if (dwCurrent == dwAddress)
+                continue;
 
-    if (Settings.iLogLevel >= 3 && nTotalCount > 1)
-    {
-        msg( "Added %i references to the selected address.\n", nTotalCount - 1 );
+            AutoSig_t TargetLocation;
+            TargetLocation.dwStartAddress = TargetLocation.dwCurrentAddress = dwCurrent;
+            TargetLocation.iOpCount = 0;
+            TargetLocation.eType = PT_REFERENCE;
+            vecSig.push_back(TargetLocation);
+
+            nTotalCount++;
+
+            if (Settings.iMaxRefCount > 0)
+            {
+                if (nTotalCount >= Settings.iMaxRefCount)
+                    break;
+            }
+        }
+        if (Settings.iLogLevel >= 3 && nTotalCount > 1)
+        {
+            msg("Added %i references to the selected address.\n", nTotalCount - 1);
+        }
     }
 
     if (nTotalCount < 5) // we are pointing at data
     {
         func_t* pFunc = get_func( dwAddress );
 
-        if (Settings.iLogLevel >= 3)
+        if (Settings.iMaxRefCount > -1 && Settings.iLogLevel >= 3)
         {
             msg( "Not enough references were found (%i so far), trying the function.\n", nTotalCount );
         }
@@ -157,7 +159,7 @@ bool AutoGenerate( ea_t dwAddress, qSigVector& refvecSig )
         {
             if (Settings.iLogLevel >= 3)
             {
-                msg( "the function seems valid scanning...\n" );
+                msg( "The function seems valid scanning...\n" );
             }
             for (ea_t dwCurrent = get_first_cref_to( pFunc->start_ea );
                 dwCurrent != BADADDR;
@@ -186,14 +188,14 @@ bool AutoGenerate( ea_t dwAddress, qSigVector& refvecSig )
         {
             if (Settings.iLogLevel >= 2)
             {
-                msg( "the function was invalid...\n" );
+                msg( "The function was invalid...\n" );
             }
         }
     }
 
     if (Settings.iLogLevel >= 2)
     {
-        msg( "added a total of %i references.\n", nTotalCount );
+        msg( "Added a total of %i references.\n", nTotalCount );
     }
 
     int iCount = 0;
@@ -206,7 +208,7 @@ bool AutoGenerate( ea_t dwAddress, qSigVector& refvecSig )
 
             if (Settings.iLogLevel >= 2)
             {
-                msg( "automated signature generation failed. Unable to proceed.\n" );
+                msg( "Automated signature generation failed. Unable to proceed.\n" );
             }
 
             return false;
@@ -223,13 +225,13 @@ bool AutoGenerate( ea_t dwAddress, qSigVector& refvecSig )
             {
                 if (Settings.iLogLevel >= 2)
                 {
-                    msg( "dropped a sig due to decompilation failure.\n" );
+                    msg( "Dropped a sig due to decompilation failure.\n" );
                 }
 
                 if (vecSig.size( ) < 1)
                 {
                     hide_wait_box( );
-                    msg( "not enough candidates to proceed. aborting...\n" );
+                    msg( "Not enough candidates to proceed. aborting...\n" );
                     return false;
                 }
 
@@ -302,7 +304,7 @@ void CreateSig( SigType eType )
     {
         if (Settings.iLogLevel >= 1)
         {
-            msg( "no code selected.\n" );
+            msg( "No code selected.\n" );
         }
         return;
     }
@@ -316,11 +318,11 @@ void CreateSig( SigType eType )
         break;
     case SIG_CODE:
         IDAToCode( strSig, strTmp, szMask );
-        strSig.sprnt( "%s, %s", strTmp.c_str( ), szMask );
+        strSig.sprnt( "\"%s\", \"%s\"", strTmp.c_str( ), szMask );
         break;
     case SIG_CRC:
         IDAToCRC( strSig, dwStart, dwEnd );
-        strSig.sprnt( "0x%X, 0x%X", dwStart, dwEnd );
+        strSig.sprnt( "\"0x%X\", \"0x%X\"", dwStart, dwEnd );
         break;
     }
 
@@ -422,11 +424,11 @@ void GenerateSig( SigType eType )
         break;
     case SIG_CODE:
         IDAToCode( strSig, strTmp, szMask );
-        strSig.sprnt( "%s, %s", strTmp.c_str( ), szMask );
+        strSig.sprnt( "\"%s\", \"%s\"", strTmp.c_str( ), szMask );
         break;
     case SIG_CRC:
         IDAToCRC( strSig, dwStart, dwEnd );
-        strSig.sprnt( "0x%X, 0x%X", dwStart, dwEnd );
+        strSig.sprnt( "\"0x%X\", \"0x%X\"", dwStart, dwEnd );
         break;
     }
 
@@ -437,13 +439,13 @@ void GenerateSig( SigType eType )
         switch (iterSig->eType)
         {
         case PT_DIRECT:
-            msg( "sig: %s\n", strSig.c_str( ) );
+            msg( "Sig: %s\n", strSig.c_str( ) );
             break;
         case PT_FUNCTION:
-            msg( "sig to containing function: (+0x%X) %s\n", dwAddress - iterSig->dwStartAddress, strSig.c_str( ) );
+            msg( "Sig to containing function: (+0x%X) %s\n", dwAddress - iterSig->dwStartAddress, strSig.c_str( ) );
             break;
         case PT_REFERENCE:
-            msg( "direct reference: [actual address in first opcode] %s\n", strSig.c_str( ) );
+            msg( "Direct reference: [actual address in first opcode] %s\n", strSig.c_str( ) );
             break;
         }
     }

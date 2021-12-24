@@ -17,12 +17,12 @@ void ShowOptions( void )
         "<#Choose the best sig from the amount of opcodes:R>\n" // 1
         "<#Choose the best sig by the smallest amount of wildcards:R>>\n" // 2
         "<Maximum refs for auto generation:A:20:10::>\n"
-        "<#Add only relilable data to sigs(choose if unsure):R>\n" // 0
+        "<#Add only reliable data to sigs(choose if unsure):R>\n" // 0
         "<#Include unsafe data in sigs(may produce better results):R>>\n" // 1
         "<#Disable logging:R>\n" // 0
         "<#Log results:R>\n" // 1
         "<#Log errors and results:R>\n" // 2
-        "<#Log errors, results and interim steps of all proceedures:R>>\n" // 3
+        "<#Log errors, results and interim steps of all procedures:R>>\n" // 3
         , &selectionType, szBuffer, &keepUnsafeData, &logLevel );
 
     if (iResult > 0)
@@ -93,7 +93,7 @@ bool idaapi run( size_t /*arg*/ )
     return true;
 }
 
-int idaapi init( void )
+plugmod_t* idaapi init( void )
 {
     Settings.Init( );
     Settings.Load( "sigmaker.ini" );
@@ -103,7 +103,7 @@ int idaapi init( void )
 
 plugin_t PLUGIN = {
     IDP_INTERFACE_VERSION,
-    PLUGIN_KEEP,
+    (int)PLUGIN_KEEP,
     init,
     NULL,
     run,
